@@ -74,8 +74,3 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
-# -------------------------------------------------
-# Do not ignore this folder and its contents
-!/Do An Tot Nghiep/
-!/Do An Tot Nghiep/**
-# -------------------------------------------------
