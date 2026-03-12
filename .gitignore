@@ -76,6 +76,6 @@ crashlytics-build.properties
 
 # -------------------------------------------------
 # Do not ignore this folder and its contents
-!Do An Tot Nghiep/
-!Do An Tot Nghiep/**
+!/Do An Tot Nghiep/
+!/Do An Tot Nghiep/**
 # -------------------------------------------------
