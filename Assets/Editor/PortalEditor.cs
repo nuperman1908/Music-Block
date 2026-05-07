@@ -39,7 +39,7 @@ public class PortalEditor : Editor
         switch (category)
         {
             case DisplayCategory.Gamemode:
-                DisplayProperty("gamemode", 1);
+                DisplayProperty("gamemodes", 1);
                 break;
             case DisplayCategory.Speed:
                 DisplayProperty("speed", 0);

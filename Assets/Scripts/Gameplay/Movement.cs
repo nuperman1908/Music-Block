@@ -80,7 +80,12 @@ public class Movement : MonoBehaviour
     void Wave()
     {
         _rb.gravityScale = 0;
-        _rb.velocity = new Vector2(0, _speedValues[(int)CurrentSpeed] * (Input.GetMouseButton(0) ? 1 : -1) * gravityDirection);
+        float speed = _speedValues[(int)CurrentSpeed];
+        float verticalDir = (Input.GetMouseButton(0) ? 1 : -1) * gravityDirection;
+        _rb.velocity = new Vector2(0, speed * verticalDir);
+
+        Vector2 moveDir = new Vector2(speed, speed * verticalDir).normalized;
+        sprite.right = moveDir;
     }
     float _robotXstart = -100;
     bool _onGroundProcessed;

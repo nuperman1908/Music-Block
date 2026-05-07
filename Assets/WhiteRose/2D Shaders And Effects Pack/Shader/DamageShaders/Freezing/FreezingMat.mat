@@ -1,0 +1,93 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-896931981950292116
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 7
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: FreezingMat
+  m_Shader: {fileID: -6465566751694194690, guid: 79aff1a3d977a514bb39880cb33b5ec1, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _IceBlue:
+        m_Texture: {fileID: 2800000, guid: ef3e1fded0d2c144e9a7bbec8db597ef, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _IceTex:
+        m_Texture: {fileID: 2800000, guid: ef3e1fded0d2c144e9a7bbec8db597ef, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _IceTex2:
+        m_Texture: {fileID: 2800000, guid: 6346fdd3d91a502419c596eaeedfdb02, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _IceWhite:
+        m_Texture: {fileID: 2800000, guid: 6346fdd3d91a502419c596eaeedfdb02, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: b66b9a3455a0b87468e6bc5183954d84, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Mask:
+        m_Texture: {fileID: 2800000, guid: 13b4d06b6a3e0024ebe96a7ddeb224ce, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AlphaAmount: 0.21
+    - _AlphaAmount2: 0.2
+    - _AlphaAmountBlue: 0
+    - _AlphaAmountWhite: 0.617
+    - _Color2Size: 400
+    - _DissolveAmount: 0
+    - _GlowAmount: 1
+    - _IceAmount: 0.5
+    - _IceAmount2: 1
+    - _Scale: 0.3
+    m_Colors:
+    - _Color: {r: 0.9890241, g: 1.8264208, b: 1.7607336, a: 0}
+    - _Color_1: {r: 0.7773585, g: 1, b: 0.995966, a: 0}
+    - _Ice2Color: {r: 0.6055534, g: 1.6530823, b: 1.8339622, a: 1}
+    - _IceColor: {r: 0.23018867, g: 0.7813608, b: 1, a: 1}
+    - _IceColor2: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []

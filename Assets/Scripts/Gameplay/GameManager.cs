@@ -17,10 +17,6 @@ public class GameManager : MonoBehaviour
             Instance = this;
         }
     }
-    private void Update()
-    {
-        
-    }
 
     public void LevelInit()
     {
