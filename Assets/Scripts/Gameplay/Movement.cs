@@ -20,24 +20,41 @@ public class Movement : MonoBehaviour
 
     public float GroundCheckRadius;
     public LayerMask GroundMask;
+    public GameObject[] GamemodeSprites;
     public Transform sprite;
     public int gravityDirection = 1;
     public bool clickProcessed = false;
     public Transform groundPlatform;
 
+    private readonly Vector2[] _colliderSizes =
+    {
+        new Vector2(1f, 1f),     // Cube
+        new Vector2(1f, 0.45f),  // Ship
+        new Vector2(1f, 1f),     // Ball
+        new Vector2(1f, 0.7f),   // UFO
+        new Vector2(1f, 0.2f),   // Wave
+        new Vector2(0.55f, 1f),  // Robot
+        new Vector2(1f, 1f),     // Spider
+    };
+
     Rigidbody2D _rb;
     TrailRenderer _trail;
+    BoxCollider2D _box;
 
     private float timer = 0f;
-    
+    private Gamemodes _lastGamemode = (Gamemodes)(-1);
+
     private void Start()
     {
         _rb = GetComponent<Rigidbody2D>();
         _trail =  GetComponent<TrailRenderer>();
+        _box = GetComponent<BoxCollider2D>();
+        UpdateGamemodeSprite();
     }
     private void FixedUpdate()
     {
         timer += Time.fixedDeltaTime;
+        if (_lastGamemode != CurrentGamemode) UpdateGamemodeSprite();
         groundPlatform.position = new Vector3(transform.position.x, groundPlatform.position.y, groundPlatform.position.z);
         /*
         transform.position += Vector3.right * _speedValues[(int)CurrentSpeed] * Time.fixedDeltaTime;
@@ -57,6 +74,26 @@ public class Movement : MonoBehaviour
     {
         return Physics2D.OverlapBox(transform.position + Vector3.down * gravityDirection * 0.5f, Vector2.right * 1.1f + Vector2.up * GroundCheckRadius, 0, GroundMask);
 
+    }
+
+    private void UpdateGamemodeSprite()
+    {
+        _lastGamemode = CurrentGamemode;
+        int idx = (int)CurrentGamemode;
+        if (GamemodeSprites != null && GamemodeSprites.Length > 0)
+        {
+            for (int i = 0; i < GamemodeSprites.Length; i++)
+            {
+                if (GamemodeSprites[i] == null) continue;
+                bool active = (i == idx);
+                GamemodeSprites[i].SetActive(active);
+                if (active) sprite = GamemodeSprites[i].transform;
+            }
+        }
+        if (_box != null && idx >= 0 && idx < _colliderSizes.Length)
+        {
+            _box.size = _colliderSizes[idx];
+        }
     }
     void Cube()
     {
