@@ -9,13 +9,14 @@ public class ObjSelectionButton : MonoBehaviour
     [SerializeField] private GameObject prefab;
     [SerializeField] private Transform spawnParent;
     [SerializeField] private float ghostAlpha = 0.5f;
+    [SerializeField] private bool singleInstance;
 
     private static GameObject _selectedPrefab;
     private static GameObject _previewObj;
     private static GameObject _previewPrefab;
     private static float _previewRotZ;
-    private static Vector2Int _lastPaintCell = new Vector2Int(int.MinValue, int.MinValue);
-    private static readonly Dictionary<Vector2Int, GameObject> _placed = new Dictionary<Vector2Int, GameObject>();
+    private static Vector2 _lastPaintPos = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
+    private static readonly List<GameObject> _placed = new List<GameObject>();
 
     private void Awake()
     {
@@ -48,8 +49,11 @@ public class ObjSelectionButton : MonoBehaviour
 
         bool overUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
         Vector3 world = cam.ScreenToWorldPoint(Input.mousePosition);
-        Vector2Int cell = new Vector2Int(Mathf.RoundToInt(world.x), Mathf.RoundToInt(world.y));
-        bool placeable = !overUI && cell.y >= -2;
+        bool snap = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+        Vector2 pos = snap
+            ? new Vector2(Mathf.RoundToInt(world.x), Mathf.RoundToInt(world.y))
+            : new Vector2(world.x, world.y);
+        bool placeable = !overUI && pos.y >= -2f;
 
         if (_previewObj != null)
         {
@@ -57,38 +61,93 @@ public class ObjSelectionButton : MonoBehaviour
             if (placeable)
             {
                 _previewObj.transform.SetPositionAndRotation(
-                    new Vector3(cell.x, cell.y, 0f),
+                    new Vector3(pos.x, pos.y, 0f),
                     Quaternion.Euler(0f, 0f, _previewRotZ));
             }
         }
 
         if (Input.GetKey(KeyCode.D))
         {
-            if (!overUI && _placed.TryGetValue(cell, out GameObject toDelete))
+            if (!overUI)
             {
-                if (toDelete != null) Destroy(toDelete);
-                _placed.Remove(cell);
+                GameObject toDelete = FindNearestPlaced(pos, 0.5f);
+                if (toDelete != null)
+                {
+                    _placed.Remove(toDelete);
+                    Destroy(toDelete);
+                }
             }
             return;
         }
 
         if (Input.GetMouseButtonDown(0))
-            _lastPaintCell = new Vector2Int(int.MinValue, int.MinValue);
+            _lastPaintPos = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
 
         if (!Input.GetMouseButton(0)) return;
         if (!placeable) return;
-        if (cell == _lastPaintCell) return;
+        if (Vector2.Distance(pos, _lastPaintPos) < 0.5f) return;
 
-        if (_placed.TryGetValue(cell, out GameObject existing))
+        for (int i = 0; i < _placed.Count; i++)
         {
-            if (existing != null) Destroy(existing);
-            _placed.Remove(cell);
+            GameObject go = _placed[i];
+            if (go == null) continue;
+            if (!IsSamePrefab(go.name, prefab.name)) continue;
+            if (((Vector2)go.transform.position - pos).sqrMagnitude < 1e-6f) return;
         }
 
-        GameObject obj = Instantiate(prefab, new Vector3(cell.x, cell.y, 0f),
+        GameObject existing = FindNearestPlaced(pos, 0.5f);
+        if (existing != null && !IsStackable(prefab.name) && !IsStackable(existing.name))
+        {
+            _placed.Remove(existing);
+            Destroy(existing);
+        }
+
+        if (singleInstance) RemoveAllOfPrefab(prefab.name);
+
+        GameObject obj = Instantiate(prefab, new Vector3(pos.x, pos.y, 0f),
             Quaternion.Euler(0f, 0f, _previewRotZ), spawnParent);
-        _placed[cell] = obj;
-        _lastPaintCell = cell;
+        _placed.Add(obj);
+        _lastPaintPos = pos;
+    }
+
+    private static bool IsStackable(string name)
+    {
+        if (string.IsNullOrEmpty(name)) return false;
+        return name.StartsWith("Orb") || name.StartsWith("JumpPad") || name.Contains("Portal");
+    }
+
+    private static bool IsSamePrefab(string instanceName, string prefabName)
+    {
+        if (string.IsNullOrEmpty(instanceName) || string.IsNullOrEmpty(prefabName)) return false;
+        int idx = instanceName.IndexOf("(Clone)");
+        string baseName = idx >= 0 ? instanceName.Substring(0, idx) : instanceName;
+        return baseName == prefabName;
+    }
+
+    private static void RemoveAllOfPrefab(string prefabName)
+    {
+        for (int i = _placed.Count - 1; i >= 0; i--)
+        {
+            GameObject go = _placed[i];
+            if (go == null) { _placed.RemoveAt(i); continue; }
+            if (!IsSamePrefab(go.name, prefabName)) continue;
+            _placed.RemoveAt(i);
+            Destroy(go);
+        }
+    }
+
+    private static GameObject FindNearestPlaced(Vector2 pos, float radius)
+    {
+        GameObject best = null;
+        float bestDist = radius;
+        for (int i = _placed.Count - 1; i >= 0; i--)
+        {
+            GameObject go = _placed[i];
+            if (go == null) { _placed.RemoveAt(i); continue; }
+            float d = Vector2.Distance(pos, go.transform.position);
+            if (d < bestDist) { bestDist = d; best = go; }
+        }
+        return best;
     }
 
     private void EnsurePreview()

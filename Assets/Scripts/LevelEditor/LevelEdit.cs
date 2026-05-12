@@ -25,7 +25,7 @@ public class LevelEdit : MonoBehaviour
 
     private Vector3 _lastMousePos;
     private bool _isPanning;
-    private GameObject _gridGo;
+    [SerializeField]  private GameObject _gridGo;
 
     private void Start()
     {
@@ -48,6 +48,10 @@ public class LevelEdit : MonoBehaviour
 
     private void Update()
     {
+        if (_gridGo)
+        {
+            _gridGo.transform.position = new Vector3((int)editorCamera.transform.position.x, (int)editorCamera.transform.position.y, 0);
+        }
         if (editorCamera == null) return;
         ground.position = new Vector3(editorCamera.transform.position.x, 0f, 0f);
 

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PortalScript : MonoBehaviour
 {
+    public bool isSpeedPortal;
     public Gamemodes gamemodes;
     public Speeds speed;
     public bool gravity;
