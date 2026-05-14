@@ -44,8 +44,10 @@ public class Movement : MonoBehaviour
     private float timer = 0f;
     private Gamemodes _lastGamemode = (Gamemodes)(-1);
 
+
     private void Start()
     {
+        groundPlatform = GameObject.Find("Ground").transform;
         _rb = GetComponent<Rigidbody2D>();
         _trail =  GetComponent<TrailRenderer>();
         _box = GetComponent<BoxCollider2D>();
@@ -198,6 +200,7 @@ public class Movement : MonoBehaviour
         }
     }
     float safeAngleThreshold = 45f;
+    const float landingTolerance = 0.08f;
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("DamageZone"))
@@ -212,22 +215,34 @@ public class Movement : MonoBehaviour
             Die();
             return;
         }
+
+        if (IsLandingOnBlock(collision)) return;
+        Die();
+    }
+
+    private bool IsLandingOnBlock(Collision2D collision)
+    {
+        if (_box == null) return false;
+
+        Bounds playerBounds = _box.bounds;
+        Bounds blockBounds = collision.collider.bounds;
+
+        if (gravityDirection > 0)
+        {
+            if (playerBounds.min.y >= blockBounds.max.y - landingTolerance) return true;
+        }
+        else
+        {
+            if (playerBounds.max.y <= blockBounds.min.y + landingTolerance) return true;
+        }
+
+        Vector2 safeNormal = Vector2.up * gravityDirection;
         foreach (ContactPoint2D contact in collision.contacts)
         {
-            
-            Vector2 safeNormal = Vector2.up * gravityDirection;
             float angle = Vector2.Angle(contact.normal, safeNormal);
-
-            if (angle < safeAngleThreshold)
-            {
-                return;
-            }
-            else
-            {
-                Die();
-                return;
-            }
+            if (angle < safeAngleThreshold) return true;
         }
+        return false;
     }
     
     private bool _onSlope;

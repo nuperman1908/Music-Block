@@ -144,11 +144,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7d771619884764468b974faf309c02d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isSpeedPortal: 1
+  isSpeedPortal: 0
   gamemodes: 6
   speed: 4
   gravity: 0
-  state: 0
+  state: 2
 --- !u!1 &6562608933620627120
 GameObject:
   m_ObjectHideFlags: 0

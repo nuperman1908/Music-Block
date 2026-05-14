@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -9,10 +8,12 @@ public class LevelEditorManager : MonoBehaviour
 
     [Header("Objects")]
     public GameObject previewLine;
+    public GameObject container;
 
     [Header("Level Info")]
     public TMP_InputField levelName;
     public TMP_InputField startTime;
+    public TextMeshProUGUI musicText;
     public AudioClip selectedMusic;
     public AudioSource previewSource;
 
@@ -22,7 +23,7 @@ public class LevelEditorManager : MonoBehaviour
         {
             Instance = this;
         }
-
+        Debug.Log(Application.persistentDataPath.ToString());
     }
 
     public void MusicPreview()
@@ -56,4 +57,64 @@ public class LevelEditorManager : MonoBehaviour
         previewLine.SetActive(false);
     }
 
+    public void SaveLevel()
+    {
+        if (container == null)
+        {
+            Debug.LogError("Container is not assigned.");
+            return;
+        }
+
+        string name = levelName != null ? levelName.text : "";
+        if (string.IsNullOrWhiteSpace(name)) name = "Untitled";
+
+        float start = 0f;
+        if (startTime != null && !string.IsNullOrEmpty(startTime.text))
+        {
+            float.TryParse(startTime.text, out start);
+        }
+
+        string musicFileName = LevelSerializer.SaveMusicFile(MusicSelector.SelectedPath);
+
+        LevelInfo level = new LevelInfo
+        {
+            id = Mathf.Abs(name.GetHashCode()),
+            name = name,
+            difficulty = 0,
+            music = musicFileName,
+            startTime = start,
+            items = new List<Item>()
+        };
+
+        Transform parent = container.transform;
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            Transform child = parent.GetChild(i);
+            level.items.Add(new Item
+            {
+                id = 0,
+                prefabName = StripCloneSuffix(child.name),
+                x = child.position.x,
+                y = child.position.y,
+                zRotate = child.eulerAngles.z,
+                alpha = GetAlpha(child),
+                groupId = 0
+            });
+        }
+
+        LevelSerializer.Save(level);
+    }
+
+    private static string StripCloneSuffix(string name)
+    {
+        if (string.IsNullOrEmpty(name)) return name;
+        int idx = name.IndexOf("(Clone)");
+        return idx >= 0 ? name.Substring(0, idx) : name;
+    }
+
+    private static float GetAlpha(Transform t)
+    {
+        SpriteRenderer sr = t.GetComponentInChildren<SpriteRenderer>();
+        return sr != null ? sr.color.a : 1f;
+    }
 }

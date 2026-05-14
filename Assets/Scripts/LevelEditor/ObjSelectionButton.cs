@@ -18,6 +18,16 @@ public class ObjSelectionButton : MonoBehaviour
     private static Vector2 _lastPaintPos = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
     private static readonly List<GameObject> _placed = new List<GameObject>();
 
+    public static void RegisterPlaced(GameObject obj)
+    {
+        if (obj != null && !_placed.Contains(obj)) _placed.Add(obj);
+    }
+
+    public static void ClearPlaced()
+    {
+        _placed.Clear();
+    }
+
     private void Awake()
     {
         GetComponent<Button>().onClick.AddListener(Select);
