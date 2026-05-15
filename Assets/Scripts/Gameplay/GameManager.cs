@@ -68,12 +68,11 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f;
         GameObject transition = GameObject.Find("Transition");
         transition.GetComponent<Animator>().Play("TransitionOut");
-
-        DOVirtual.DelayedCall(1.5f, () =>
+        levelToLoad = PlayerPrefs.GetString("levelToLoad");
+        LevelInit(levelToLoad);
+        DOVirtual.DelayedCall(3f, () =>
         {
-            levelToLoad = PlayerPrefs.GetString("levelToLoad");
-            LevelInit(levelToLoad);
-
+            GameObject.Destroy(GameObject.Find("TransitionCanvas"));
         });
     }
 
@@ -272,9 +271,12 @@ public class GameManager : MonoBehaviour
             }
         }
         endpoint = GameObject.FindGameObjectWithTag("End").transform;
-        LoadMusicFromResources(level.music);
-        SpawnPlayer();
-        PlayMusic(level.startTime);
+        DOVirtual.DelayedCall(2f, () =>
+        {
+            LoadMusicFromResources(level.music);
+            SpawnPlayer();
+            PlayMusic(level.startTime);
+        });
 
         Debug.Log($"Loaded level '{level.name}' with {(level.items != null ? level.items.Count : 0)} items.");
     }

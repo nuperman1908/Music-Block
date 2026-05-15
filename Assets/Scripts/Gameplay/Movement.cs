@@ -182,7 +182,7 @@ public class Movement : MonoBehaviour
                 break;
             case 2:
                 gravityDirection = gravity;
-                _rb.velocity = new Vector2(_rb.velocity.x, 0f);
+                _rb.velocity /= 2;
                 _rb.gravityScale = MathF.Abs(_rb.gravityScale) * (int)gravity;
                 _gravityFlipped = true;
                 break;

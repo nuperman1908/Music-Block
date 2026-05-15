@@ -7995,7 +7995,7 @@ MonoBehaviour:
   - {fileID: 2325350459204655902, guid: c289d73c0097ba2459c0e96f8d1df1f3, type: 3}
   - {fileID: 6916634349981584635, guid: 4ad648f5b6ea35a4a8c33166758d8640, type: 3}
   - {fileID: 1803260219466696034, guid: d9033223a4b30094283238bd6c6f983c, type: 3}
-  levelToLoad: Level 1
+  levelToLoad: Level 2
   loadOnStart: 1
 --- !u!4 &1534041654
 Transform:

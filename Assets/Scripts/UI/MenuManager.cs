@@ -35,4 +35,8 @@ public class MenuManager : MonoBehaviour
     {
         Application.Quit();
     }
+    public void LvEditor()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("LevelEditor");
+    }
 }
