@@ -25,6 +25,7 @@ public class Movement : MonoBehaviour
     public int gravityDirection = 1;
     public bool clickProcessed = false;
     public Transform groundPlatform;
+    public GameObject dieFx;
 
     private readonly Vector2[] _colliderSizes =
     {
@@ -82,6 +83,10 @@ public class Movement : MonoBehaviour
     {
         _lastGamemode = CurrentGamemode;
         int idx = (int)CurrentGamemode;
+
+        transform.rotation = Quaternion.identity;
+        if (_rb != null) _rb.velocity = Vector2.zero;
+
         if (GamemodeSprites != null && GamemodeSprites.Length > 0)
         {
             for (int i = 0; i < GamemodeSprites.Length; i++)
@@ -90,6 +95,7 @@ public class Movement : MonoBehaviour
                 bool active = (i == idx);
                 GamemodeSprites[i].SetActive(active);
                 if (active) sprite = GamemodeSprites[i].transform;
+                GamemodeSprites[i].transform.localRotation = Quaternion.identity;
             }
         }
         if (_box != null && idx >= 0 && idx < _colliderSizes.Length)
@@ -197,6 +203,12 @@ public class Movement : MonoBehaviour
                     portal.initiatePortal(this);
                 }
                 break;
+            case "End":
+                if (GameManager.Instance != null)
+                {
+                    GameManager.Instance.TriggerWin();
+                }
+                break;
         }
     }
     float safeAngleThreshold = 45f;
@@ -273,8 +285,29 @@ public class Movement : MonoBehaviour
     }
     private void Die()
     {
-        Debug.Log(timer);
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        if (dieFx != null)
+        {
+            dieFx.transform.SetParent(null, true);
+            dieFx.SetActive(true);
+            Destroy(dieFx, 3f);
+        }
+        GameManager.Instance.musicSource.Stop();
+        foreach (Renderer r in GetComponentsInChildren<Renderer>())
+        {
+            r.enabled = false;
+        }
+
+        if (_rb != null)
+        {
+            _rb.velocity = Vector2.zero;
+            _rb.simulated = false;
+        }
+        this.enabled = false;
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.RestartLevel(1f);
+        }
     }
 
     private void OnDestroy()
