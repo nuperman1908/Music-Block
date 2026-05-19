@@ -13,13 +13,13 @@ static public class generic
     }
     static public void CreateGamemode(Rigidbody2D rb, Movement host, bool onGroundRequired, float initalVelocity, float gravityScale, bool canHold = false, bool flipOnClick = false, float rotationMod = 0, float yVelocityLimit = Mathf.Infinity)
     {
-        if (!Input.GetMouseButton(0) || canHold && host.OnGround())
+        if (!host.GetMouseButton(0) || canHold && host.OnGround())
         {
             host.clickProcessed = false;
         }
         rb.gravityScale = gravityScale * host.gravityDirection;
         LimitYVelocity(yVelocityLimit, rb);
-        if (Input.GetMouseButton(0))
+        if (host.GetMouseButton(0))
         {
             if (host.OnGround() && !host.clickProcessed || !onGroundRequired && !host.clickProcessed)
             {

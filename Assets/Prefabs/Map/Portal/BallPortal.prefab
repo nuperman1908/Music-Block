@@ -144,11 +144,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7d771619884764468b974faf309c02d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isSpeedPortal: 0
+  isSpeedPortal: 1
   gamemodes: 2
   speed: 4
   gravity: 0
-  state: 1
+  state: 0
 --- !u!1 &6977332497873974620
 GameObject:
   m_ObjectHideFlags: 0
@@ -161,7 +161,7 @@ GameObject:
   - component: {fileID: 7705486166637413619}
   m_Layer: 0
   m_Name: BallSprite
-  m_TagString: Player
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -1,0 +1,29 @@
+{
+    "Bot": {
+        "checkpoints": [
+            {
+                "steps": 4962,
+                "file_path": "results\\1\\Bot\\Bot-4962.onnx",
+                "reward": 0.4380975954416322,
+                "creation_time": 1778951941.7104084,
+                "auxillary_file_paths": [
+                    "results\\1\\Bot\\Bot-4962.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 4962,
+            "file_path": "results\\1\\Bot.onnx",
+            "reward": 0.4380975954416322,
+            "creation_time": 1778951941.7104084,
+            "auxillary_file_paths": [
+                "results\\1\\Bot\\Bot-4962.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "1.13.1+cpu"
+    }
+}

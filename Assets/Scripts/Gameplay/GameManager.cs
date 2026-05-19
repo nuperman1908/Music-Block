@@ -10,6 +10,12 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
+    public event System.Action OnPlayerDied;
+    public event System.Action OnPlayerWon;
+    public event System.Action OnPlayerSpawned;
+
+    public void RaisePlayerDied() { OnPlayerDied?.Invoke(); }
+
     public Movement player;
     public GameObject playerPrefab;
     public int attempts = 1;
@@ -179,6 +185,7 @@ public class GameManager : MonoBehaviour
         if (_winning) return;
         _winning = true;
         playing = false;
+        OnPlayerWon?.Invoke();
         StartCoroutine(WinSequence());
     }
 
@@ -323,6 +330,7 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogWarning("No player prefab or scene player assigned.");
         }
+        OnPlayerSpawned?.Invoke();
     }
 
     private GameObject FindPrefab(string prefabName)

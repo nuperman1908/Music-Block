@@ -8,34 +8,44 @@ public class OrbScript : MonoBehaviour
 
     private static readonly float[] jumpForces = { 13f, 19.5269f, 26f };
 
-    private Movement _player;
+    private Movement _user;
     private bool _inRange;
     private bool _clicked = false;
 
+    private static bool IsControllable(Collider2D col)
+    {
+        return col.CompareTag("Player") || col.CompareTag("Bot");
+    }
+
     private void OnTriggerEnter2D(Collider2D col)
     {
-        if (!col.CompareTag("Player")) return;
-        _player = col.GetComponent<Movement>();
+        if (!IsControllable(col)) return;
+        Movement m = col.GetComponent<Movement>();
+        if (m == null) return;
+        _user = m;
         _inRange = true;
     }
 
     private void OnTriggerExit2D(Collider2D col)
     {
-        if (!col.CompareTag("Player")) return;
-        _player = null;
+        if (!IsControllable(col)) return;
+        if (_user != null && col.gameObject != _user.gameObject) return;
+        _user = null;
         _inRange = false;
     }
 
     private void Update()
     {
         if (_clicked) return;
-        if (!_inRange || _player == null) return;
-        if (!Input.GetMouseButtonDown(0)) return;
-        if (_player.clickProcessed) return;
+        if (!_inRange || _user == null) return;
+        if (_user.GetMouseButtonUp(0) || _user.GetMouseButtonDown(0))
+        {
+            if (_user.clickProcessed) return;
 
-        Activate();
-        _clicked = true;
-        _player.clickProcessed = true;
+            Activate();
+            _clicked = true;
+            _user.clickProcessed = true;
+        }
     }
 
     private void Activate()
@@ -45,16 +55,16 @@ public class OrbScript : MonoBehaviour
             case OrbTypes.JumpLow:
             case OrbTypes.JumpNormal:
             case OrbTypes.JumpHigh:
-                _player.ApplyOrbJump(jumpForces[(int)orbType]);
+                _user.ApplyOrbJump(jumpForces[(int)orbType]);
                 break;
 
             case OrbTypes.GravityFlip:
-                _player.ChangeThroughPortal(
-                    _player.CurrentGamemode,
-                    _player.CurrentSpeed,
-                    _player.gravityDirection == 1 ? -1 : 1,
+                _user.ChangeThroughPortal(
+                    _user.CurrentGamemode,
+                    _user.CurrentSpeed,
+                    _user.gravityDirection == 1 ? -1 : 1,
                     2,
-                    _player.yLastPortal 
+                    _user.yLastPortal
                 );
                 break;
         }

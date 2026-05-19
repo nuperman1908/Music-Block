@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 9193723901041227526}
   - component: {fileID: 1693594372733760827}
   - component: {fileID: 3341782360723933972}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Orb2
-  m_TagString: Untagged
+  m_TagString: Orb
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -146,7 +146,7 @@ GameObject:
   - component: {fileID: 7711911144198577723}
   - component: {fileID: 5252494207602313326}
   - component: {fileID: 9115521005023767331}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Fx
   m_TagString: Untagged
   m_Icon: {fileID: 0}

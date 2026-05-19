@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8270807783829084044}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: '!Slope'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -43,7 +43,7 @@ GameObject:
   m_Component:
   - component: {fileID: 62605685776420223}
   - component: {fileID: 4029057812947662628}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: Hbox
   m_TagString: Block
   m_Icon: {fileID: 0}
@@ -117,7 +117,7 @@ GameObject:
   - component: {fileID: 4053046527347144619}
   - component: {fileID: 8499429101258222944}
   - component: {fileID: 1468861894898883156}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: Sprite
   m_TagString: Slope
   m_Icon: {fileID: 0}

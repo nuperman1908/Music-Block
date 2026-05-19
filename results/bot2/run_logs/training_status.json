@@ -1,0 +1,65 @@
+{
+    "Bot": {
+        "checkpoints": [
+            {
+                "steps": 13249938,
+                "file_path": "results\\bot2\\Bot\\Bot-13249938.onnx",
+                "reward": -0.8795435596723109,
+                "creation_time": 1779177937.905439,
+                "auxillary_file_paths": [
+                    "results\\bot2\\Bot\\Bot-13249938.pt"
+                ]
+            },
+            {
+                "steps": 13299998,
+                "file_path": "results\\bot2\\Bot\\Bot-13299998.onnx",
+                "reward": -0.8133032559417188,
+                "creation_time": 1779178083.5717697,
+                "auxillary_file_paths": [
+                    "results\\bot2\\Bot\\Bot-13299998.pt"
+                ]
+            },
+            {
+                "steps": 13349986,
+                "file_path": "results\\bot2\\Bot\\Bot-13349986.onnx",
+                "reward": -0.8144639713379244,
+                "creation_time": 1779178239.587797,
+                "auxillary_file_paths": [
+                    "results\\bot2\\Bot\\Bot-13349986.pt"
+                ]
+            },
+            {
+                "steps": 13399970,
+                "file_path": "results\\bot2\\Bot\\Bot-13399970.onnx",
+                "reward": -0.8102146768942475,
+                "creation_time": 1779178397.5527277,
+                "auxillary_file_paths": [
+                    "results\\bot2\\Bot\\Bot-13399970.pt"
+                ]
+            },
+            {
+                "steps": 13419188,
+                "file_path": "results\\bot2\\Bot\\Bot-13419188.onnx",
+                "reward": -0.6063216757805397,
+                "creation_time": 1779178449.7014413,
+                "auxillary_file_paths": [
+                    "results\\bot2\\Bot\\Bot-13419188.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 13419188,
+            "file_path": "results\\bot2\\Bot.onnx",
+            "reward": -0.6063216757805397,
+            "creation_time": 1779178449.7014413,
+            "auxillary_file_paths": [
+                "results\\bot2\\Bot\\Bot-13419188.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "1.13.1+cpu"
+    }
+}

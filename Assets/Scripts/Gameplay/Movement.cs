@@ -27,6 +27,36 @@ public class Movement : MonoBehaviour
     public Transform groundPlatform;
     public GameObject dieFx;
 
+    public bool isBot = false;
+    public event System.Action OnDied;
+    public event System.Action OnWon;
+
+    public const int ACT_DOWN = 0;
+    public const int ACT_UP = 1;
+    public const int ACT_HOLD = 2;
+    public const int ACT_NONE = 3;
+
+    private int _botAction = ACT_NONE;
+    public int BotAction => _botAction;
+    public void SetBotAction(int action) => _botAction = action;
+    public bool IsHolding => _botAction == ACT_DOWN || _botAction == ACT_HOLD;
+
+    public bool GetMouseButton(int button)
+    {
+        if (!isBot) return Input.GetMouseButton(button);
+        return IsHolding;
+    }
+    public bool GetMouseButtonDown(int button)
+    {
+        if (!isBot) return Input.GetMouseButtonDown(button);
+        return _botAction == ACT_DOWN;
+    }
+    public bool GetMouseButtonUp(int button)
+    {
+        if (!isBot) return Input.GetMouseButtonUp(button);
+        return _botAction == ACT_UP;
+    }
+
     private readonly Vector2[] _colliderSizes =
     {
         new Vector2(1f, 1f),     // Cube
@@ -39,7 +69,6 @@ public class Movement : MonoBehaviour
     };
 
     Rigidbody2D _rb;
-    TrailRenderer _trail;
     BoxCollider2D _box;
 
     private float timer = 0f;
@@ -48,9 +77,7 @@ public class Movement : MonoBehaviour
 
     private void Start()
     {
-        groundPlatform = GameObject.Find("Ground").transform;
         _rb = GetComponent<Rigidbody2D>();
-        _trail =  GetComponent<TrailRenderer>();
         _box = GetComponent<BoxCollider2D>();
         UpdateGamemodeSprite();
     }
@@ -58,10 +85,8 @@ public class Movement : MonoBehaviour
     {
         timer += Time.fixedDeltaTime;
         if (_lastGamemode != CurrentGamemode) UpdateGamemodeSprite();
-        groundPlatform.position = new Vector3(transform.position.x, groundPlatform.position.y, groundPlatform.position.z);
-        /*
-        transform.position += Vector3.right * _speedValues[(int)CurrentSpeed] * Time.fixedDeltaTime;
-        */
+        //groundPlatform.position = new Vector3(transform.position.x, groundPlatform.position.y, groundPlatform.position.z);
+
         if (!_onSlope)
             transform.position += Vector3.right * _speedValues[(int)CurrentSpeed] * Time.fixedDeltaTime;
         else
@@ -110,9 +135,9 @@ public class Movement : MonoBehaviour
 
     void Ship()
     {
-        _rb.gravityScale = 2.93f * (Input.GetMouseButton(0) ? -1 : 1) * gravityDirection;
+        _rb.gravityScale = 2.93f * (GetMouseButton(0) ? -1 : 1) * gravityDirection;
         generic.LimitYVelocity(9.95f, _rb);
-        transform.rotation = Quaternion.Euler(0, 0, _rb.velocity.y * 2f);
+        if (sprite != null) sprite.localRotation = Quaternion.Euler(0, 0, _rb.velocity.y * 2f);
     }
     void Ball()
     {
@@ -126,7 +151,7 @@ public class Movement : MonoBehaviour
     {
         _rb.gravityScale = 0;
         float speed = _speedValues[(int)CurrentSpeed];
-        float verticalDir = (Input.GetMouseButton(0) ? 1 : -1) * gravityDirection;
+        float verticalDir = (GetMouseButton(0) ? 1 : -1) * gravityDirection;
         _rb.velocity = new Vector2(0, speed * verticalDir);
 
         Vector2 moveDir = new Vector2(speed, speed * verticalDir).normalized;
@@ -137,11 +162,11 @@ public class Movement : MonoBehaviour
     bool _gravityFlipped;
     void Robot()
     {
-        if (!Input.GetMouseButton(0))
+        if (!GetMouseButton(0))
         {
             clickProcessed = false;
         }
-        if (OnGround() && !clickProcessed && Input.GetMouseButton(0))
+        if (OnGround() && !clickProcessed && GetMouseButton(0))
         {
             _gravityFlipped = false;
             clickProcessed = true;
@@ -150,14 +175,14 @@ public class Movement : MonoBehaviour
         }
         if (Mathf.Abs(_robotXstart - transform.position.x) <= 3)
         {
-            if (Input.GetMouseButton(0) && !_gravityFlipped && _onGroundProcessed)
+            if (GetMouseButton(0) && !_gravityFlipped && _onGroundProcessed)
             {
                 _rb.gravityScale = 0;
                 _rb.velocity = Vector2.up * 10.4f * gravityDirection;
                 return;
             }
         }
-        else if (Input.GetMouseButton(0))
+        else if (GetMouseButton(0))
         {
             _onGroundProcessed = false;
         }
@@ -204,7 +229,8 @@ public class Movement : MonoBehaviour
                 }
                 break;
             case "End":
-                if (GameManager.Instance != null)
+                OnWon?.Invoke();
+                if (!isBot && GameManager.Instance != null)
                 {
                     GameManager.Instance.TriggerWin();
                 }
@@ -291,6 +317,14 @@ public class Movement : MonoBehaviour
             dieFx.SetActive(true);
             Destroy(dieFx, 3f);
         }
+
+        if (isBot)
+        {
+            if (_rb != null) _rb.velocity = Vector2.zero;
+            OnDied?.Invoke();
+            return;
+        }
+
         GameManager.Instance.musicSource.Stop();
         foreach (Renderer r in GetComponentsInChildren<Renderer>())
         {
@@ -304,18 +338,14 @@ public class Movement : MonoBehaviour
         }
         this.enabled = false;
 
+        OnDied?.Invoke();
+
         if (GameManager.Instance != null)
         {
+            GameManager.Instance.RaisePlayerDied();
             GameManager.Instance.RestartLevel(1f);
         }
     }
 
-    private void OnDestroy()
-    {
-        if (_trail != null)
-        {
-            _trail.Clear();
-            _trail = null;
-        }
-    }
+
 }

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2405181840045596423}
   - component: {fileID: 5314087800730046830}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SpiderSprite
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 5612809489776565182}
   - component: {fileID: 6842432413627805661}
   - component: {fileID: 7910691887024407927}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -173,16 +173,16 @@ BoxCollider2D:
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 2039
   m_ForceReceiveLayers:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 2039
   m_ContactCaptureLayers:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 2039
   m_CallbackLayers:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 2039
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -230,6 +230,7 @@ MonoBehaviour:
   clickProcessed: 0
   groundPlatform: {fileID: 0}
   dieFx: {fileID: 6473164404088956879}
+  isBot: 0
 --- !u!96 &7910691887024407927
 TrailRenderer:
   serializedVersion: 3
@@ -362,7 +363,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4569766084892070956}
   - component: {fileID: 2640562014009085305}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -516,7 +517,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1201693090300186718}
   - component: {fileID: 1184460018399154020}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: UFOSprite
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -601,7 +602,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6845947721600128531}
   - component: {fileID: 3360902802584705100}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: BallSprite
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -685,7 +686,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2635504135554655498}
   - component: {fileID: 8970647295441714343}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: ShipSprite
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -770,7 +771,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5276208555757751305}
   - component: {fileID: 3284831911139521174}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -924,7 +925,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3597091663029476571}
   - component: {fileID: 7964111787748309780}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1078,7 +1079,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3365378768462620546}
   - component: {fileID: 3185354672382119117}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: WaveSprite
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -1164,7 +1165,7 @@ GameObject:
   - component: {fileID: 3037329033493444263}
   - component: {fileID: 5720912389196665587}
   - component: {fileID: 4692030042152356028}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: CubeSprite
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -1372,7 +1373,7 @@ GameObject:
   - component: {fileID: 1602502058884028265}
   - component: {fileID: 67019243979493542}
   - component: {fileID: 5267119626919588145}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: RobotSprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1479,7 +1480,7 @@ GameObject:
   - component: {fileID: 3736086336077858934}
   - component: {fileID: 6783223688253046323}
   - component: {fileID: 8834232422178333326}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: DieFx
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6404,7 +6405,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3909466287327727243}
   - component: {fileID: 4174886487673177297}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
