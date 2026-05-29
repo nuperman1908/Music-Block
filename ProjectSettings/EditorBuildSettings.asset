@@ -14,4 +14,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/LevelEditor.unity
     guid: 3f5c161d550b0ed468a1b2bd56834069
+  - enabled: 1
+    path: Assets/Scenes/CustomGameplay.unity
+    guid: 1dd07696f3a353046a20198d07f2f040
+  - enabled: 1
+    path: Assets/Scenes/ChallengeGameplay.unity
+    guid: 55e44d9be9b361c44b7e204ed08d7617
   m_configObjects: {}

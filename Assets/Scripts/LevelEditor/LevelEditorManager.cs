@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -9,6 +10,7 @@ public class LevelEditorManager : MonoBehaviour
     [Header("Objects")]
     public GameObject previewLine;
     public GameObject container;
+    public GameObject settingMenu;
 
     [Header("Level Info")]
     public TMP_InputField levelName;
@@ -23,7 +25,6 @@ public class LevelEditorManager : MonoBehaviour
         {
             Instance = this;
         }
-        Debug.Log(Application.persistentDataPath.ToString());
     }
 
     public void MusicPreview()
@@ -105,6 +106,22 @@ public class LevelEditorManager : MonoBehaviour
         LevelSerializer.Save(level);
     }
 
+    public void SaveAndPlay()
+    {
+        SaveLevel();
+        PlayerPrefs.SetString("levelToLoad", levelName.text);
+        PlayerPrefs.Save();
+        UnityEngine.SceneManagement.SceneManager.LoadScene("CustomGameplay");
+    }
+    public void SaveAndQuit()
+    {
+        SaveLevel();
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Menu");
+    }
+    public void BackMenu()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Menu");
+    }
     private static string StripCloneSuffix(string name)
     {
         if (string.IsNullOrEmpty(name)) return name;

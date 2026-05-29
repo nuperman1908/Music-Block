@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
 public enum Speeds { Slow = 0, Normal = 1, Fast = 2, Faster = 3, Fastest = 4 }
@@ -43,18 +44,79 @@ public class Movement : MonoBehaviour
 
     public bool GetMouseButton(int button)
     {
-        if (!isBot) return Input.GetMouseButton(button);
-        return IsHolding;
+        if (isBot) return IsHolding;
+        return PlayerInput.IsHeld();
     }
     public bool GetMouseButtonDown(int button)
     {
-        if (!isBot) return Input.GetMouseButtonDown(button);
-        return _botAction == ACT_DOWN;
+        if (isBot) return _botAction == ACT_DOWN;
+        return PlayerInput.WasPressedThisFrame();
     }
     public bool GetMouseButtonUp(int button)
     {
-        if (!isBot) return Input.GetMouseButtonUp(button);
-        return _botAction == ACT_UP;
+        if (isBot) return _botAction == ACT_UP;
+        return PlayerInput.WasReleasedThisFrame();
+    }
+
+    private static class PlayerInput
+    {
+        public static bool IsHeld()
+        {
+            if (Input.touchCount > 0)
+            {
+                for (int i = 0; i < Input.touchCount; i++)
+                {
+                    Touch t = Input.GetTouch(i);
+                    if (t.phase == TouchPhase.Ended || t.phase == TouchPhase.Canceled) continue;
+                    if (IsTouchOverUI(t.fingerId)) continue;
+                    return true;
+                }
+                return false;
+            }
+            return Input.GetMouseButton(0) && !IsPointerOverUI();
+        }
+
+        public static bool WasPressedThisFrame()
+        {
+            if (Input.touchCount > 0)
+            {
+                for (int i = 0; i < Input.touchCount; i++)
+                {
+                    Touch t = Input.GetTouch(i);
+                    if (t.phase != TouchPhase.Began) continue;
+                    if (IsTouchOverUI(t.fingerId)) continue;
+                    return true;
+                }
+                return false;
+            }
+            return Input.GetMouseButtonDown(0) && !IsPointerOverUI();
+        }
+
+        public static bool WasReleasedThisFrame()
+        {
+            if (Input.touchCount > 0)
+            {
+                for (int i = 0; i < Input.touchCount; i++)
+                {
+                    Touch t = Input.GetTouch(i);
+                    if (t.phase != TouchPhase.Ended) continue;
+                    if (IsTouchOverUI(t.fingerId)) continue;
+                    return true;
+                }
+                return false;
+            }
+            return Input.GetMouseButtonUp(0) && !IsPointerOverUI();
+        }
+
+        private static bool IsPointerOverUI()
+        {
+            return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+        }
+
+        private static bool IsTouchOverUI(int fingerId)
+        {
+            return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject(fingerId);
+        }
     }
 
     private readonly Vector2[] _colliderSizes =
@@ -79,13 +141,18 @@ public class Movement : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody2D>();
         _box = GetComponent<BoxCollider2D>();
+        if (!isBot)
+        {
+            groundPlatform = GameManager.Instance.groundPlatform;
+        }
         UpdateGamemodeSprite();
     }
     private void FixedUpdate()
     {
+        if (GameManager.Instance == null || GameManager.Instance.paused) return;
         timer += Time.fixedDeltaTime;
         if (_lastGamemode != CurrentGamemode) UpdateGamemodeSprite();
-        //groundPlatform.position = new Vector3(transform.position.x, groundPlatform.position.y, groundPlatform.position.z);
+        groundPlatform.position = new Vector3(transform.position.x, groundPlatform.position.y, groundPlatform.position.z);
 
         if (!_onSlope)
             transform.position += Vector3.right * _speedValues[(int)CurrentSpeed] * Time.fixedDeltaTime;
@@ -233,6 +300,24 @@ public class Movement : MonoBehaviour
                 if (!isBot && GameManager.Instance != null)
                 {
                     GameManager.Instance.TriggerWin();
+                }
+                if (isBot)
+                {
+                    GameManager.Instance.LoseChallenge();   
+                }
+                break;
+            case "CheckPoint":
+                Vector3 cpPos = collision.transform.position;
+                if (isBot)
+                {
+                    BotControl bot = GetComponent<BotControl>();
+                    if (bot != null) bot.SetCheckpoint(cpPos, CurrentGamemode, CurrentSpeed);
+                }
+                else if (GameManager.Instance != null)
+                {
+                    AudioSource src = GameManager.Instance.musicSource;
+                    float musicTime = src != null ? src.time : 0f;
+                    GameManager.Instance.SetPlayerCheckpoint(cpPos, musicTime, CurrentGamemode, CurrentSpeed);
                 }
                 break;
         }

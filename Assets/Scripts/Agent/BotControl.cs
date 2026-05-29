@@ -1,5 +1,7 @@
+using Unity.Barracuda;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 
@@ -11,6 +13,10 @@ public class BotControl : Agent
     [Header("Spawn")]
     public SpawnPoint[] spawnPoints;
     public bool randomizeSpawn = true;
+
+    [Header("Models")]
+    public NNModel EasyModel;
+    public NNModel HardModel;
 
     [Header("Reward")]
     public float distanceRewardScale = 0.001f;
@@ -30,6 +36,34 @@ public class BotControl : Agent
     private Speeds _spawnSpeed;
     private int _spawnGravity;
     private float _spawnYLastPortal;
+
+    private Vector3 _checkpointPos;
+    private Gamemodes _checkpointGamemode;
+    private Speeds _checkpointSpeed;
+    private bool _hasCheckpoint;
+
+    public void SetCheckpoint(Vector3 pos, Gamemodes gamemode, Speeds speed)
+    {
+        _checkpointPos = pos;
+        _checkpointGamemode = gamemode;
+        _checkpointSpeed = speed;
+        _hasCheckpoint = true;
+    }
+
+    BehaviorParameters _behaviorParameters;
+
+    private void Start()
+    {
+        _behaviorParameters = GetComponent<BehaviorParameters>();
+        if (PlayerPrefs.GetInt("ChallengeMode") == 1)
+        {
+            _behaviorParameters.Model = HardModel;
+        }
+        else
+        {
+            _behaviorParameters.Model = EasyModel;
+        }
+    }
 
     public override void Initialize()
     {
@@ -67,6 +101,13 @@ public class BotControl : Agent
                 gravity = sp.NormalizedGravity;
                 yLastPortal = sp.yLastPortal;
             }
+        }
+
+        if (_hasCheckpoint)
+        {
+            spawnPos = _checkpointPos;
+            gamemode = _checkpointGamemode;
+            speed = _checkpointSpeed;
         }
 
         transform.position = spawnPos;

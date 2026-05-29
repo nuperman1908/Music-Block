@@ -3,5 +3,63 @@
         "stats_format_version": "0.3.0",
         "mlagents_version": "0.30.0",
         "torch_version": "1.13.1+cpu"
+    },
+    "Bot": {
+        "checkpoints": [
+            {
+                "steps": 44599966,
+                "file_path": "results\\train1\\Bot\\Bot-44599966.onnx",
+                "reward": 120.82033448293805,
+                "creation_time": 1779704100.731779,
+                "auxillary_file_paths": [
+                    "results\\train1\\Bot\\Bot-44599966.pt"
+                ]
+            },
+            {
+                "steps": 44649937,
+                "file_path": "results\\train1\\Bot\\Bot-44649937.onnx",
+                "reward": 50.31196073559113,
+                "creation_time": 1779704226.0769036,
+                "auxillary_file_paths": [
+                    "results\\train1\\Bot\\Bot-44649937.pt"
+                ]
+            },
+            {
+                "steps": 44699971,
+                "file_path": "results\\train1\\Bot\\Bot-44699971.onnx",
+                "reward": 60.50990358740091,
+                "creation_time": 1779704350.819055,
+                "auxillary_file_paths": [
+                    "results\\train1\\Bot\\Bot-44699971.pt"
+                ]
+            },
+            {
+                "steps": 44749972,
+                "file_path": "results\\train1\\Bot\\Bot-44749972.onnx",
+                "reward": -0.7759881024248898,
+                "creation_time": 1779704466.5245993,
+                "auxillary_file_paths": [
+                    "results\\train1\\Bot\\Bot-44749972.pt"
+                ]
+            },
+            {
+                "steps": 44755924,
+                "file_path": "results\\train1\\Bot\\Bot-44755924.onnx",
+                "reward": null,
+                "creation_time": 1779704476.4921536,
+                "auxillary_file_paths": [
+                    "results\\train1\\Bot\\Bot-44755924.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 44755924,
+            "file_path": "results\\train1\\Bot.onnx",
+            "reward": null,
+            "creation_time": 1779704476.4921536,
+            "auxillary_file_paths": [
+                "results\\train1\\Bot\\Bot-44755924.pt"
+            ]
+        }
     }
 }

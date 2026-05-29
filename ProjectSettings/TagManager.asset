@@ -12,6 +12,7 @@ TagManager:
   - End
   - JumpPad
   - Orb
+  - CheckPoint
   layers:
   - Default
   - TransparentFX

@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
@@ -17,46 +18,60 @@ public class GameManager : MonoBehaviour
     public void RaisePlayerDied() { OnPlayerDied?.Invoke(); }
 
     public Movement player;
+    public Movement bot;
     public GameObject playerPrefab;
     public int attempts = 1;
     public AudioSource musicSource;
     public CameraFollow cameraFollow;
 
-    public bool paused = false;
+    public bool paused = true;
     public bool playing = true;
+    public bool isChallengeMode;
 
     [Header("UI")]
     public Scrollbar progressBar;
+    public Scrollbar progressBar_Bot;
     public GameObject pauseMenu;
     public GameObject winMenu;
+    public GameObject loseMenu;
     public TextMeshProUGUI attemptText;
     public TextMeshProUGUI attemptTextPause;
     public TextMeshProUGUI attemptTextWin;
+    public TextMeshProUGUI attemptTextLose;
 
     [Header("GameObjects")]
     public Transform endpoint;
+    public Transform groundPlatform;
+    public GameObject checkPointPrefab;
 
-    [Header("Spawn")]
-    public Transform container;
-
-    [Header("Prefab Lookup")]
-    public List<GameObject> mapPrefabs = new List<GameObject>();
-
-    [Header("Auto Load")]
-    public string levelToLoad;
-    public bool loadOnStart;
+    [Header("Level")]
+    public LevelGenerator levelGenerator;
 
     [Header("SFX")]
-    public AudioClip musicClip;
     public AudioClip winSfx;
     public float winFlyDuration = 0.8f;
 
     private bool _winning;
     private bool _gameplayStarted;
 
-    public LevelInfo currentLevel { get; private set; }
+    private Vector3 _checkpointPos;
+    private float _checkpointMusicTime;
+    private Gamemodes _checkpointGamemode;
+    private Speeds _checkpointSpeed;
+    private bool _hasCheckpoint;
+
+    public LevelInfo currentLevel => levelGenerator != null ? levelGenerator.currentLevel : null;
 
     private static readonly Vector3 PlayerSpawn = new Vector3(-0.5f, -2f, 0f);
+
+    public void SetPlayerCheckpoint(Vector3 pos, float musicTime, Gamemodes gamemode, Speeds speed)
+    {
+        _checkpointPos = pos;
+        _checkpointMusicTime = musicTime;
+        _checkpointGamemode = gamemode;
+        _checkpointSpeed = speed;
+        _hasCheckpoint = true;
+    }
 
 
 
@@ -73,11 +88,27 @@ public class GameManager : MonoBehaviour
         Application.targetFrameRate = 144;
         Time.timeScale = 1f;
         GameObject transition = GameObject.Find("Transition");
-        transition.GetComponent<Animator>().Play("TransitionOut");
-        levelToLoad = PlayerPrefs.GetString("levelToLoad");
-        LevelInit(levelToLoad);
+        if (transition != null)
+        {
+            transition.GetComponent<Animator>().Play("TransitionOut");
+        }
+
+        string levelName = PlayerPrefs.GetString("levelToLoad");
+        if (levelGenerator != null) levelGenerator.Generate(levelName);
+
+
+        if (isChallengeMode && levelGenerator != null)
+        {
+            levelGenerator.SpawnCheckpoints(checkPointPrefab);
+        }
+
+        SpawnPlayer();
+        float start = currentLevel != null ? currentLevel.startTime : 0f;
+
         DOVirtual.DelayedCall(3f, () =>
         {
+            paused = false;
+            PlayMusic(start);
             GameObject.Destroy(GameObject.Find("TransitionCanvas"));
         });
     }
@@ -85,14 +116,22 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        if (endpoint == null)
+            endpoint = GameObject.FindGameObjectWithTag("End").transform;
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             TogglePause();
         }
-
         if (!paused && player != null && endpoint != null)
         {
-            progressBar.size = Mathf.Clamp01((player.transform.position.x - PlayerSpawn.x) / (endpoint.position.x - PlayerSpawn.x));
+            progressBar.value = (player.transform.position.x - PlayerSpawn.x) / (endpoint.position.x - PlayerSpawn.x);
+        }
+        if (isChallengeMode)
+        {
+            if (!paused && player != null && groundPlatform != null)
+            {
+                progressBar_Bot.value = (bot.transform.position.x - PlayerSpawn.x) / (endpoint.position.x - PlayerSpawn.x);
+            }
         }
     }
 
@@ -120,8 +159,6 @@ public class GameManager : MonoBehaviour
         {
             pauseMenu.SetActive(paused);
         }
-        if (paused && attemptTextPause != null && attemptTextPause.isActiveAndEnabled)
-            attemptTextPause.text = "Attempt " + attempts;
     }
 
     public void RestartLevel()
@@ -169,7 +206,9 @@ public class GameManager : MonoBehaviour
 
         if (musicSource != null && musicSource.clip != null)
         {
-            float startTime = currentLevel != null ? currentLevel.startTime : 0f;
+            float startTime = _hasCheckpoint
+                ? _checkpointMusicTime
+                : (currentLevel != null ? currentLevel.startTime : 0f);
             musicSource.Stop();
             musicSource.time = Mathf.Clamp(startTime, 0f, Mathf.Max(0f, musicSource.clip.length - 0.01f));
             musicSource.Play();
@@ -179,7 +218,22 @@ public class GameManager : MonoBehaviour
         _winning = false;
         playing = true;
     }
-
+    public void RestartChallenge()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+    public void LoseChallenge()
+    {
+        if (_winning) return;
+        loseMenu.SetActive(true);
+        paused = true;
+        playing = false;
+        if (musicSource != null)
+        {
+            musicSource.Pause();
+        }
+        attemptTextLose.text = "Attempt " + attempts;
+    }
     public void TriggerWin()
     {
         if (_winning) return;
@@ -226,105 +280,44 @@ public class GameManager : MonoBehaviour
             attemptTextWin.text = "Attempt " + attempts;
     }
 
-    public void LevelInit()
-    {
-        LevelInit(levelToLoad);
-    }
-
-    public void LevelInit(string levelFileName)
-    {
-        if (container == null)
-        {
-            Debug.LogError("Container is not assigned.");
-            return;
-        }
-
-        string resourcePath = "Level/" + System.IO.Path.GetFileNameWithoutExtension(levelFileName);
-        TextAsset json = Resources.Load<TextAsset>(resourcePath);
-        if (json == null)
-        {
-            Debug.LogError($"Level JSON not found at Resources/{resourcePath}.json");
-            return;
-        }
-
-        LevelInfo level = JsonUtility.FromJson<LevelInfo>(json.text);
-        if (level == null)
-        {
-            Debug.LogError("Failed to parse level JSON.");
-            return;
-        }
-        currentLevel = level;
-
-        for (int i = container.childCount - 1; i >= 0; i--)
-        {
-            Destroy(container.GetChild(i).gameObject);
-        }
-
-        if (level.items != null)
-        {
-            foreach (Item item in level.items)
-            {
-                GameObject prefab = FindPrefab(item.prefabName);
-                if (prefab == null)
-                {
-                    Debug.LogWarning($"Prefab not found: {item.prefabName}");
-                    continue;
-                }
-                GameObject obj = Instantiate(prefab,
-                    new Vector3(item.x, item.y, 0f),
-                    Quaternion.Euler(0f, 0f, item.zRotate),
-                    container);
-                ApplyAlpha(obj.transform, item.alpha);
-            }
-        }
-        endpoint = GameObject.FindGameObjectWithTag("End").transform;
-        DOVirtual.DelayedCall(2f, () =>
-        {
-            LoadMusicFromResources(level.music);
-            SpawnPlayer();
-            PlayMusic(level.startTime);
-        });
-
-        Debug.Log($"Loaded level '{level.name}' with {(level.items != null ? level.items.Count : 0)} items.");
-    }
-
-    private void LoadMusicFromResources(string musicFileName)
-    {
-        musicClip = null;
-        if (string.IsNullOrEmpty(musicFileName)) return;
-
-        string resourceName = System.IO.Path.GetFileNameWithoutExtension(musicFileName);
-        AudioClip clip = Resources.Load<AudioClip>("Music/" + resourceName);
-        if (clip == null)
-        {
-            Debug.LogWarning($"Music not found at Resources/Music/{resourceName}");
-            return;
-        }
-        musicClip = clip;
-    }
-
     private void PlayMusic(float startTime)
     {
-        if (musicSource == null || musicClip == null) return;
-        musicSource.clip = musicClip;
-        musicSource.time = Mathf.Clamp(startTime, 0f, Mathf.Max(0f, musicClip.length - 0.01f));
+        if (musicSource == null) return;
+        AudioClip clip = levelGenerator != null ? levelGenerator.loadedMusic : null;
+        if (clip == null) return;
+        musicSource.clip = clip;
+        musicSource.time = Mathf.Clamp(startTime, 0f, Mathf.Max(0f, clip.length - 0.01f));
         musicSource.Play();
     }
 
     private void SpawnPlayer()
     {
+        Vector3 spawn = _hasCheckpoint ? _checkpointPos : PlayerSpawn;
         if (playerPrefab != null)
         {
-            GameObject obj = Instantiate(playerPrefab, PlayerSpawn, Quaternion.identity);
+            GameObject obj = Instantiate(playerPrefab, spawn, Quaternion.identity);
             Movement m = obj.GetComponent<Movement>();
             cameraFollow.player = obj.transform;
-            if (m != null) player = m;
+            if (m != null)
+            {
+                player = m;
+                if (_hasCheckpoint)
+                {
+                    m.CurrentGamemode = _checkpointGamemode;
+                    m.CurrentSpeed = _checkpointSpeed;
+                }
+            }
         }
         else if (player != null)
         {
-            player.transform.position = PlayerSpawn;
+            player.transform.position = spawn;
             Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
             if (rb != null) rb.velocity = Vector2.zero;
+            if (_hasCheckpoint)
+            {
+                player.CurrentGamemode = _checkpointGamemode;
+                player.CurrentSpeed = _checkpointSpeed;
+            }
         }
         else
         {
@@ -333,24 +326,4 @@ public class GameManager : MonoBehaviour
         OnPlayerSpawned?.Invoke();
     }
 
-    private GameObject FindPrefab(string prefabName)
-    {
-        if (string.IsNullOrEmpty(prefabName)) return null;
-        foreach (GameObject p in mapPrefabs)
-        {
-            if (p != null && p.name == prefabName) return p;
-        }
-        return null;
-    }
-
-    private static void ApplyAlpha(Transform t, float alpha)
-    {
-        SpriteRenderer sr = t.GetComponentInChildren<SpriteRenderer>();
-        if (sr != null)
-        {
-            Color c = sr.color;
-            c.a = alpha;
-            sr.color = c;
-        }
-    }
 }

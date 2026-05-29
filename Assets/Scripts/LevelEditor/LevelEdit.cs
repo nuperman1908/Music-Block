@@ -55,6 +55,11 @@ public class LevelEdit : MonoBehaviour
         if (editorCamera == null) return;
         ground.position = new Vector3(editorCamera.transform.position.x, 0f, 0f);
 
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            LevelEditorManager.Instance.settingMenu.SetActive(LevelEditorManager.Instance.settingMenu.activeSelf ? false : true);
+        }
+
         if (Input.GetMouseButtonDown(panMouseButton))
         {
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
