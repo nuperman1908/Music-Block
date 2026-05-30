@@ -149,7 +149,7 @@ public class Movement : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        if (GameManager.Instance == null || GameManager.Instance.paused) return;
+        if ((GameManager.Instance == null || GameManager.Instance.paused) && SceneManager.GetActiveScene().name != "Test") return;
         timer += Time.fixedDeltaTime;
         if (_lastGamemode != CurrentGamemode) UpdateGamemodeSprite();
         groundPlatform.position = new Vector3(transform.position.x, groundPlatform.position.y, groundPlatform.position.z);
