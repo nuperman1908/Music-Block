@@ -418,6 +418,7 @@ MonoBehaviour:
   attemptText: {fileID: 698580826}
   attemptTextPause: {fileID: 0}
   attemptTextWin: {fileID: 1732859415}
+  attemptTextLose: {fileID: 0}
   endpoint: {fileID: 0}
   groundPlatform: {fileID: 1147934347}
   checkPointPrefab: {fileID: 0}
@@ -897,11 +898,11 @@ RectTransform:
   - {fileID: 888636453}
   m_Father: {fileID: 568024745}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 464}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -25}
   m_SizeDelta: {x: 800, y: 20}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &198345454
 MonoBehaviour:
   m_ObjectHideFlags: 0

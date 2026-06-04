@@ -23,6 +23,7 @@ public class MenuManager : MonoBehaviour
         {
             Instance = this;
         }
+        Time.timeScale = 1f;
         PopulateCustomLevels();
     }
 
@@ -84,6 +85,7 @@ public class MenuManager : MonoBehaviour
         DontDestroyOnLoad(transition);
         DOVirtual.DelayedCall(2f, () =>
         {
+            PlayerPrefs.SetString("levelToLoad", "Level 1");
             PlayerPrefs.SetInt("ChallengeMode", isHard ? 1 : 0);
             UnityEngine.SceneManagement.SceneManager.LoadScene("ChallengeGameplay");
         });
