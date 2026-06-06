@@ -274,7 +274,7 @@ public class Movement : MonoBehaviour
                 break;
             case 2:
                 gravityDirection = gravity;
-                _rb.velocity /= 2;
+                _rb.velocity = Vector2.zero;
                 _rb.gravityScale = MathF.Abs(_rb.gravityScale) * (int)gravity;
                 _gravityFlipped = true;
                 break;
@@ -350,6 +350,21 @@ public class Movement : MonoBehaviour
         Bounds playerBounds = _box.bounds;
         Bounds blockBounds = collision.collider.bounds;
 
+        if (CurrentGamemode == Gamemodes.Cube || CurrentGamemode == Gamemodes.Ship)
+        {
+            if (playerBounds.min.y >= blockBounds.max.y - landingTolerance) return true;
+            if (playerBounds.max.y <= blockBounds.min.y + landingTolerance) return true;
+
+            foreach (ContactPoint2D contact in collision.contacts)
+            {
+                float angle = Vector2.Angle(contact.normal, Vector2.up);
+                if (angle < safeAngleThreshold) return true;   // normal hướng lên
+                if (angle > 180f - safeAngleThreshold) return true; // normal hướng xuống
+            }
+
+            return false;
+        }
+
         if (gravityDirection > 0)
         {
             if (playerBounds.min.y >= blockBounds.max.y - landingTolerance) return true;
@@ -367,7 +382,7 @@ public class Movement : MonoBehaviour
         }
         return false;
     }
-    
+
     private bool _onSlope;
     
     private void OnCollisionStay2D(Collision2D collision)
